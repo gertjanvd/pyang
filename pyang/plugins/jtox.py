@@ -82,15 +82,15 @@ class JtoXPlugin(plugin.PyangPlugin):
                 ndata.append([(k.i_module.i_modulename, k.arg)
                               for k in ch.i_key])
             elif ch.keyword in ["leaf", "leaf-list"]:
-                ndata.append(self.base_type(ch.search_one("type")))
+                ndata.append(self.base_type(ch.search_one("type"), ch))
             modname = ch.i_module.i_modulename
             parent[nodename] = ndata
 
-    def base_type(self, type):
+    def base_type(self, type, ref_node=None):
         """Return the base type of `type`."""
         while 1:
             if type.arg == "leafref":
-                node = type.i_type_spec.i_target_node
+                 return self.base_type(ref_node.i_leafref_ptr[0].search_one("type"))
             elif type.i_typedef is None:
                 break
             else:
